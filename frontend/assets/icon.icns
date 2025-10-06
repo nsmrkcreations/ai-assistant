@@ -1,0 +1,2 @@
+# Placeholder for macOS icon - In production, this would be a binary .icns file
+# For now, we'll create a simple icon using electron-builder's default

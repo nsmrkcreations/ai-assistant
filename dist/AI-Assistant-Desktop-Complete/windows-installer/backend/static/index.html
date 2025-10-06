@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant Desktop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 800px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            background: #3b82f6;
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.assistant {
+            background: white;
+            border: 1px solid #e5e7eb;
+            margin-right: auto;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .input-area input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .send-btn {
+            padding: 12px 24px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #2563eb;
+        }
+
+        .send-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .controls {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #f3f4f6;
+        }
+
+        .btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .footer {
+            padding: 15px 20px;
+            background: #f8fafc;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 10px 20px;
+            border-left: 4px solid #dc2626;
+            margin: 10px 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Assistant Desktop</h1>
+            <p>Your Personal AI Employee - Minimal Version</p>
+        </div>
+
+        <div class="status">
+            <div class="status-indicator">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Connecting...</span>
+            </div>
+            <div id="connectionInfo">
+                <span id="connectionCount">0 connections</span>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="message assistant">
+                    <strong>AI Assistant:</strong> Hello! I'm your AI assistant. This is a minimal version running without advanced AI features. You can chat with me and I'll echo your messages. Try typing something below!
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="Type your message here..." 
+                    onkeypress="if(event.key==='Enter') sendMessage()"
+                >
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="testHealth()">Health Check</button>
+            <button class="btn" onclick="testSettings()">Settings</button>
+            <button class="btn" onclick="clearChat()">Clear Chat</button>
+            <button class="btn" onclick="toggleTheme()">Toggle Theme</button>
+            <button class="btn" id="wsBtn" onclick="toggleWebSocket()">Disconnect WS</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>Processing your request...</p>
+        </div>
+
+        <div class="footer">
+            <p>AI Assistant Desktop v1.0.0 - Minimal Backend | WebSocket Status: <span id="wsStatus">Connecting...</span></p>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let isConnected = false;
+        let messageCount = 0;
+        let isDarkTheme = false;
+
+        // Initialize the application
+        function init() {
+            connectWebSocket();
+            updateStatus('Initializing...', false);
+            
+            // Test backend health
+            testHealth();
+        }
+
+        // WebSocket connection management
+        function connectWebSocket() {
+            if (ws) {
+                ws.close();
+            }
+
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = function() {
+                isConnected = true;
+                updateStatus('Connected', true);
+                updateWSStatus('Connected');
+                document.getElementById('wsBtn').textContent = 'Disconnect WS';
+                
+                // Send ping to keep connection alive
+                setInterval(() => {
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({ type: 'ping', timestamp: Date.now() }));
+                    }
+                }, 30000);
+            };
+
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+
+            ws.onclose = function() {
+                isConnected = false;
+                updateStatus('Disconnected', false);
+                updateWSStatus('Disconnected');
+                document.getElementById('wsBtn').textContent = 'Connect WS';
+                
+                // Auto-reconnect after 3 seconds
+                setTimeout(() => {
+                    if (!isConnected) {
+                        connectWebSocket();
+                    }
+                }, 3000);
+            };
+
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                updateStatus('Connection Error', false);
+                updateWSStatus('Error');
+            };
+        }
+
+        function handleWebSocketMessage(data) {
+            if (data.type === 'pong') {
+                // Handle ping/pong
+                return;
+            }
+            
+            if (data.type === 'chat_response') {
+                const response = data.data;
+                addMessage('assistant', response.message);
+                hideLoading();
+            }
+            
+            if (data.type === 'settings_updated') {
+                showNotification('Settings updated successfully!');
+            }
+        }
+
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            if (!isConnected) {
+                showError('Not connected to server. Please wait for reconnection.');
+                return;
+            }
+
+            // Add user message to chat
+            addMessage('user', message);
+            input.value = '';
+            showLoading();
+
+            // Send via WebSocket
+            const data = {
+                type: 'chat',
+                data: {
+                    message: message,
+                    context_id: Date.now().toString()
+                }
+            };
+
+            ws.send(JSON.stringify(data));
+        }
+
+        function addMessage(sender, text) {
+            const messages = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const senderName = sender === 'user' ? 'You' : 'AI Assistant';
+            
+            messageDiv.innerHTML = `<strong>${senderName}:</strong> ${text} <small style="opacity: 0.7; font-size: 10px;">${timestamp}</small>`;
+            
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+            
+            messageCount++;
+        }
+
+        function clearChat() {
+            document.getElementById('messages').innerHTML = `
+                <div class="message assistant">
+                    <strong>AI Assistant:</strong> Chat cleared! How can I help you today?
+                </div>
+            `;
+            messageCount = 0;
+        }
+
+        // API testing functions
+        async function testHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    updateStatus('Backend Healthy', true);
+                    document.getElementById('connectionCount').textContent = 
+                        `${data.services.websocket.connections} connections`;
+                } else {
+                    updateStatus('Backend Issues', false);
+                }
+            } catch (error) {
+                updateStatus('Backend Error', false);
+                showError('Failed to connect to backend: ' + error.message);
+            }
+        }
+
+        async function testSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const data = await response.json();
+                
+                addMessage('assistant', `Current settings: ${JSON.stringify(data, null, 2)}`);
+            } catch (error) {
+                showError('Failed to get settings: ' + error.message);
+            }
+        }
+
+        // UI helper functions
+        function updateStatus(text, isHealthy) {
+            document.getElementById('statusText').textContent = text;
+            const dot = document.getElementById('statusDot');
+            dot.style.background = isHealthy ? '#4ade80' : '#ef4444';
+        }
+
+        function updateWSStatus(status) {
+            document.getElementById('wsStatus').textContent = status;
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('sendBtn').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('sendBtn').disabled = false;
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            
+            document.querySelector('.container').insertBefore(
+                errorDiv, 
+                document.querySelector('.chat-container')
+            );
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showNotification(message) {
+            addMessage('assistant', `📢 ${message}`);
+        }
+
+        function toggleWebSocket() {
+            if (isConnected) {
+                ws.close();
+            } else {
+                connectWebSocket();
+            }
+        }
+
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.style.filter = isDarkTheme ? 'invert(1) hue-rotate(180deg)' : 'none';
+            
+            if (isDarkTheme) {
+                document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+            } else {
+                document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+        }
+
+        // Initialize when page loads
+        window.onload = init;
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible' && !isConnected) {
+                connectWebSocket();
+            }
+        });
+    </script>
+</body>
+</html>

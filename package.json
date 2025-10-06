@@ -1,0 +1,68 @@
+{
+  "name": "ai-assistant-desktop",
+  "version": "1.0.0",
+  "description": "AI Assistant Desktop Application - A comprehensive personal AI assistant",
+  "main": "frontend/dist/main.js",
+  "scripts": {
+    "install-backend": "cd backend && pip install -r requirements.txt",
+    "install-frontend": "cd frontend && npm install",
+    "install-all": "npm run install-backend && npm run install-frontend",
+    "build-frontend": "cd frontend && npm run build",
+    "start-backend": "cd backend && python main.py",
+    "start-frontend": "cd frontend && npm start",
+    "dev-frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run start-backend\" \"npm run dev-frontend\"",
+    "build": "npm run build-frontend",
+    "test-backend": "cd backend && python -m pytest tests/",
+    "test-frontend": "cd frontend && npm test",
+    "test": "npm run test-backend && npm run test-frontend",
+    "lint-backend": "cd backend && flake8 .",
+    "lint-frontend": "cd frontend && npm run lint",
+    "lint": "npm run lint-backend && npm run lint-frontend",
+    "package": "npm run build && cd frontend && npm run dist",
+    "build-installer": "node build-installer.js",
+    "build-all": "node build-installer.js all",
+    "build-portable": "node build-installer.js portable",
+    "build-deps": "node build-installer.js deps",
+    "dist": "npm run build-installer",
+    "install-system": "python scripts/install.py",
+    "uninstall-system": "python scripts/install.py --uninstall"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ai-assistant/desktop.git"
+  },
+  "keywords": [
+    "ai",
+    "assistant",
+    "desktop",
+    "automation",
+    "voice",
+    "llm",
+    "electron",
+    "python",
+    "productivity"
+  ],
+  "author": "AI Assistant Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ai-assistant/desktop/issues"
+  },
+  "homepage": "https://github.com/ai-assistant/desktop#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "python": ">=3.8.0"
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

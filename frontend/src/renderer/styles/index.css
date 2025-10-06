@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+  
+  body {
+    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .chat-message {
+    @apply p-4 rounded-lg mb-4 max-w-4xl;
+  }
+  
+  .chat-message.user {
+    @apply bg-primary-100 dark:bg-primary-900 ml-auto;
+  }
+  
+  .chat-message.assistant {
+    @apply bg-gray-100 dark:bg-gray-800 mr-auto;
+  }
+  
+  .voice-button {
+    @apply w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200;
+  }
+  
+  .voice-button.recording {
+    @apply bg-red-500 text-white animate-pulse;
+  }
+  
+  .voice-button.idle {
+    @apply bg-primary-500 text-white hover:bg-primary-600;
+  }
+  
+  .status-indicator {
+    @apply w-3 h-3 rounded-full;
+  }
+  
+  .status-healthy {
+    @apply bg-green-500;
+  }
+  
+  .status-degraded {
+    @apply bg-yellow-500;
+  }
+  
+  .status-unhealthy {
+    @apply bg-red-500;
+  }
+  
+  .status-offline {
+    @apply bg-gray-500;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Loading animations */
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+.typing-indicator span {
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Voice visualization */
+@keyframes voice-wave {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(2);
+  }
+}
+
+.voice-wave {
+  animation: voice-wave 0.5s infinite ease-in-out;
+}
+
+.voice-wave:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.voice-wave:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.voice-wave:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.voice-wave:nth-child(5) {
+  animation-delay: 0.4s;
+}

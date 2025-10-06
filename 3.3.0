@@ -1,0 +1,16 @@
+Defaulting to user installation because normal site-packages is not writeable
+Collecting python-jose[cryptography]
+  Downloading python_jose-3.5.0-py2.py3-none-any.whl.metadata (5.5 kB)
+Collecting ecdsa!=0.15 (from python-jose[cryptography])
+  Downloading ecdsa-0.19.1-py2.py3-none-any.whl.metadata (29 kB)
+Requirement already satisfied: rsa!=4.1.1,!=4.4,<5.0,>=4.0 in c:\users\admin\appdata\roaming\python\python313\site-packages (from python-jose[cryptography]) (4.9.1)
+Requirement already satisfied: pyasn1>=0.5.0 in c:\users\admin\appdata\roaming\python\python313\site-packages (from python-jose[cryptography]) (0.6.1)
+Requirement already satisfied: cryptography>=3.4.0 in c:\users\admin\appdata\roaming\python\python313\site-packages (from python-jose[cryptography]) (46.0.2)
+Requirement already satisfied: cffi>=2.0.0 in c:\users\admin\appdata\roaming\python\python313\site-packages (from cryptography>=3.4.0->python-jose[cryptography]) (2.0.0)
+Requirement already satisfied: pycparser in c:\users\admin\appdata\roaming\python\python313\site-packages (from cffi>=2.0.0->cryptography>=3.4.0->python-jose[cryptography]) (2.23)
+Requirement already satisfied: six>=1.9.0 in c:\users\admin\appdata\roaming\python\python313\site-packages (from ecdsa!=0.15->python-jose[cryptography]) (1.17.0)
+Downloading python_jose-3.5.0-py2.py3-none-any.whl (34 kB)
+Downloading ecdsa-0.19.1-py2.py3-none-any.whl (150 kB)
+Installing collected packages: ecdsa, python-jose
+
+Successfully installed ecdsa-0.19.1 python-jose-3.5.0
